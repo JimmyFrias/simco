@@ -106,7 +106,7 @@ export class Reclamaciones extends Component {
     this.setState({ [e.targte.name]: e.target.value });
     this.setState({ buscar: false });
   };
-
+  // este remplaza unos eventos que tenias pero ya estan configurados
   handledChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
