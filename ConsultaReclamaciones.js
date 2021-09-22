@@ -5,6 +5,8 @@ import PublishIcon from '@material-ui/icons/Publish';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
+import Select from '@material-ui/core/Select';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
 // import compose from 'recompose/compose';
 // import { connect } from 'react-redux';
 import compose from 'recompose/compose';
@@ -21,6 +23,7 @@ import { getReclamaciones, getObtenerCatalogos } from '../reclamaciones/actions'
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
+import { stringify } from 'querystring';
 
 const fin = moment().format('DD/MM/YYYY');
 
@@ -50,6 +53,8 @@ export class Reclamaciones extends Component {
       this.handleChangePagePrev= this.handleChangePagePrev.bind(this);
       this.handleChangePageNext= this.handleChangePageNext.bind(this);
       this.handledChange= this.handledChange.bind(this);
+      //this.llenaReclamacionDrawer=this.llenaReclamacionDrawer.bind(this);
+      
       this.state = {
         folioreclamacion: '',
         fechareclamacion: '',
@@ -58,7 +63,8 @@ export class Reclamaciones extends Component {
         importe: '',
         estatusreclamacion: '',
         empresaria: '',  
-        plaza: '',
+        plaza: 0,
+        selectedModuleProfiles: [],
         claveempresaria: '',
         fechasuceso: '',
         producto: '',
@@ -74,12 +80,23 @@ export class Reclamaciones extends Component {
         showResult: false,
         buscar: false,
         right: false,
-        anchor: false
+        anchor: false,
+        catalogosfetch:false
       };
   }
+  componentDidMount() {
+    this.getReclamaciones();
+   this.getObtenerCatalogos();
+ 
+}
 
   handleChangeFolio = (e) => {
-    this.setState({folioreclamacion: e.target.value.substr(0,50)});
+    const value=e.target.value;
+      const re =/[^A-Za-z0-9]*$/;
+
+  if (value === '' || re.test(value)) {
+   this.setState({folioreclamacion: e.target.value.substr(0,19)});
+  }
     this.setState({buscar: false});
   }
   handleChangeFechaReclamacion = (e) => {
@@ -140,13 +157,7 @@ export class Reclamaciones extends Component {
     this.setState({anchor: false});
   };
 
-  onPaste = (e) => {
-    const str = e.clipboardData.getData('Text');
-    const newStr = str.replace(/[+-.]/g, '');
-    if (str !== newStr) {
-      e.preventDefault();
-    }
-  }
+  
 
   handleChangePageSize = (event) => {
     this.setState({pageSize:  +event.target.value});
@@ -169,32 +180,6 @@ export class Reclamaciones extends Component {
     }
   };
 
-  /*
-   getReclamacionFolio = async () => {
-     await this.setState({waiting: true});
-     let query={};
-     query.folio = this.state.folio;
-     query.status = this.state.status;
-     query.pageNo = 0;
-     query.pageSize = 10000000;
-     await this.props.actionGetReclamacionFolio(query);
-    
-     function createData(foliodereclamacion, fechadereclamacion, empresaria, tipodereclamacion, importe, estatus) {
-       return { foliodereclamacion, fechadereclamacion, empresaria, tipodereclamacion, importe, estatus };
-     }
-     let apiresponselements = this.props.reclamaciones.page.content;
-     let tableRows = [];
-     for (let i=0; i < apiresponselements.length; i++) {
-       let singleRow = createData(apiresponselements[i].foliodereclamacion, apiresponselements[i].fechadereclamacion, apiresponselements[i].empresaria, apiresponselements[i].tipodereclamacion, apiresponselements[i].importe, apiresponselements[i].status);
-       tableRows.push(singleRow);
-     }
-     await this.setState({tableData: tableRows});
-     await this.setState({pageNo: 0});
-     await this.setState({totalElements: this.props.reclamaciones.page.totalElements});
-     await this.setState({waiting: false, showResult: true,});
-     await this.setState({buscar: true});
-  }
-  */
   getReclamaciones = async () => {
     await this.setState({waiting: true});
      let query={};
@@ -227,18 +212,63 @@ export class Reclamaciones extends Component {
     await this.setState({waiting: true});
     let query={};
     await this.props.actionGetObtenerCatalogos(query);
-    console.log(this.props.catalogo.content);
-
-    let apiresponselements = this.props.catalogo;
+    console.log(this.props.catalogo);
+     await this.setState({catalogosfetch:true});
+    //let apiresponselements = this.props.catalogo.tiposaclaracion;
+    //console.log("GETOBTENER"+this.props.catalogo.tiposaclaracion[0].descripciontipo);
+     
+   
     let tableRows = [];
+
 
   }
 
+  selectStatus = (event) => {
+    this.setState({ [event.target.name]: event.target.value }, () => this.searchByStatus());
+  };
 
-  render() {
+
+  validaEntrada = (event) => {
+    const reg = /^[\w\d ]+$/;
+    stringify.replace('_');
+    if(!reg.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  onPaste = (e) => {
+    const str = e.clipboardData.getData('folioreclamacion');
+    const newStr = str.replace(/[+-.]/g, '');
+    if (str !== newStr) {
+      e.preventDefault();
+    }
+  }
+  
+   /*llenaReclamacionDrawer =() =>{
+     console.log("test"+this.state.catalogo)
+       //console.log("llena reclamacion 1!! " +this.state.catalogo.tiposaclaracion);
+ 
+       return this.state.catalogo.map((c,index,array)=>{
+        var indice=c.tiposaclaracion.length
+      while (array.indexOf(c)<c.tiposaclaracion.length){
+        return (
+      <>
+      <MenuItem value={c.tiposaclaracion[indice-1].descripciontipo}>${c.tiposaclaracion[indice-1].descripciontipo}</MenuItem>
+       </>
+          );
+      };
+      }
+          )
+      }*/
+
     
+    
+    
+  render() {
+    const {catalogosfetch} = this.state;
     const list = () => (
-      <div
+      
+        <div
         className="reclamacionDrawer"
         role="presentation"
       >
@@ -249,7 +279,7 @@ export class Reclamaciones extends Component {
           <Divider style={{marginBottom: '30px'}} />
         </List>
 
-
+        
         <div className="reclamacionDrawerContainer">
           <MuiThemeProvider theme={theme}>
             <TextField
@@ -262,12 +292,29 @@ export class Reclamaciones extends Component {
               value={this.state.tipodereclamacion}
               onChange={this.handleChangeTipodeReclamacion.bind(this)}
             >
+             
+             {typeof this.state.catalogo !==`undefined` ?this.state.catalogo.map((c,index,array)=>{
+var indice=c.tiposaclaracion.length
+
+return <MenuItem value={c.tiposaclaracion[indice-1].descripciontipo}>${c.tiposaclaracion[indice-1].descripciontipo}</MenuItem>
+/*while (array.indexOf(c)<c.tiposaclaracion.length){
+
+}*/
+             }):null}
+           
+          
+            
+              
+              {/*<MenuItem value="Deposito a otra empresaria">Deposito a otra empresaria</MenuItem>
               <MenuItem value="Deposito a otra empresaria">Deposito a otra empresaria</MenuItem>
-              <MenuItem value="Deposito a otra empresaria">Deposito a otra empresaria</MenuItem>
-              <MenuItem value="Deposito a otra empresaria">Deposito a otra empresaria</MenuItem>
+              <MenuItem value="Deposito a otra empresaria">Deposito a otra empresaria</MenuItem>*/}
+            
             </TextField>
           </MuiThemeProvider>
-
+          {
+                    JSON.stringify(this.state) 
+                  }
+                  guia
           <div className="reclamacionesDrawerInputs">
             <MuiThemeProvider theme={theme}>
                 <TextField
@@ -280,9 +327,15 @@ export class Reclamaciones extends Component {
                   value={this.state.plaza}
                   onChange={this.handledChange.bind(this)}
                 >
-                  <MenuItem value="Culiacán">Culiacán</MenuItem>
-                  <MenuItem value="Culiacán,">Culiacán</MenuItem>
-                  <MenuItem value="Culiacán,">Culiacán</MenuItem>
+                  
+                 <Select value={this.state.plaza} onChange={e => this.getObtenerCatalogos(e)} input={<OutlinedInput labelWidth={0} name="plaza" />} className="altaUsuario__body__permits__select__comp">
+												<MenuItem value="111" disabled><em>Seleccionar perfil</em></MenuItem>
+												{this.state.selectedModuleProfiles.map((val, key) => {
+                          console.log(val);
+													return <MenuItem value={val.catalogo} key={key}><em> {val.catalogo} </em></MenuItem>;
+												})}
+											</Select>
+                     
                 </TextField>
             </MuiThemeProvider>
             <MuiThemeProvider theme={theme}>
@@ -438,10 +491,6 @@ export class Reclamaciones extends Component {
         </div>
       </div>
     );
-
-
-
-
     return (
 
       <div className="reclamaciones_pageContainer">
@@ -482,6 +531,8 @@ export class Reclamaciones extends Component {
                   label="Buscar por folio"
                   variant="outlined"
                   autoComplete="off"
+                  inputProps={{maxLength:`20`}}
+                  onKeyPress={(event) => { this.validaEntrada(event); }}
                   value={this.state.folio}
                   onChange={this.handleChangeFolio.bind(this)}
                 />
@@ -527,11 +578,11 @@ export class Reclamaciones extends Component {
           {
           this.state.totalElements === 0 ? (
             <div className="reclamaciones_noResultados">
-            <p>No se han encontrado resultados</p>
+            <p>No se encontraron resultados de la búsqueda.</p>
           </div>
          ) : this.state.totalElements === '-' ? (
             <div className="reclamaciones_noResultados">
-              <p>No se han encontrado resultados</p>
+              <p>No se encontraron resultados de la búsqueda.</p>
             </div>
           ) : (
             <PaginationTable 
@@ -602,7 +653,3 @@ export default compose(
 /*
 export default Reclamaciones;
 */
-
-
-
-
