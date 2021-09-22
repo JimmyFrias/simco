@@ -15,7 +15,7 @@ import { ApoloDatePicker, ApoloButton } from "dsmapolo-react";
 import { MuiThemeProvider } from "@material-ui/core";
 import moment from "moment";
 import "../styles/custom.css";
-
+import { theme } from './theme';
 import "../styles/reclamaciones.css";
 import PaginationTable from "./PaginationTableReclamaciones.js";
 import {
@@ -271,19 +271,19 @@ export class Reclamaciones extends Component {
             >
               {typeof this.state.catalogo !== `undefined`
                 ? this.state.catalogo.map((c, index, array) => {
-                    var indice = c.tiposaclaracion.length;
+                  var indice = c.tiposaclaracion.length;
 
-                    return (
-                      <MenuItem
-                        value={c.tiposaclaracion[indice - 1].descripciontipo}
-                      >
-                        ${c.tiposaclaracion[indice - 1].descripciontipo}
-                      </MenuItem>
-                    );
-                    /*while (array.indexOf(c)<c.tiposaclaracion.length){
+                  return (
+                    <MenuItem
+                      value={c.tiposaclaracion[indice - 1].descripciontipo}
+                    >
+                      ${c.tiposaclaracion[indice - 1].descripciontipo}
+                    </MenuItem>
+                  );
+                  /*while (array.indexOf(c)<c.tiposaclaracion.length){
 
 }*/
-                  })
+                })
                 : null}
 
               {/*<MenuItem value="Deposito a otra empresaria">Deposito a otra empresaria</MenuItem>
