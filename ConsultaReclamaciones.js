@@ -27,10 +27,9 @@ import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import { stringify } from "querystring";
+import { initialState } from "../initialState";
 
 const fin = moment().format("DD/MM/YYYY");
-
-
 
 export class Reclamaciones extends Component {
   constructor(props) {
@@ -43,34 +42,7 @@ export class Reclamaciones extends Component {
 
     //this.llenaReclamacionDrawer=this.llenaReclamacionDrawer.bind(this);
 
-    this.state = {
-      folioreclamacion: "",
-      fechareclamacion: "",
-      tiporeclamacion: "",
-      tipodereclamacion: "",
-      importe: "",
-      estatusreclamacion: "",
-      empresaria: "",
-      plaza: 0,
-      selectedModuleProfiles: [],
-      claveempresaria: "",
-      fechasuceso: "",
-      producto: "",
-      canaldetransaccion: "",
-      reportereclamado: "",
-      origenreclamacion: "",
-      motivoreclamacion: "",
-      totalElements: "-",
-      tableData: "",
-      pageNo: 0,
-      pageSize: 10,
-      waiting: false,
-      showResult: false,
-      buscar: false,
-      right: false,
-      anchor: false,
-      catalogosfetch: false,
-    };
+    this.state = initialState;
   }
   componentDidMount() {
     this.getReclamaciones();
